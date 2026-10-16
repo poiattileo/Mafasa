@@ -139,3 +139,102 @@ if (!function_exists('mafasa_validate_csrf')) {
         return true;
     }
 }
+
+if (!function_exists('mafasa_display_right_error')) {
+    /**
+     * Exibe o erro de acesso negado de forma compatível entre GLPI 11 e 12.
+     * GLPI 11: Html::displayRightError() (aceita mensagem adicional e encerra).
+     * GLPI 12: a Html do core não expõe mais o método -> lança
+     * AccessDeniedHttpException; sem ela, responde 403 e encerra.
+     */
+    function mafasa_display_right_error(string $additional = ''): void
+    {
+        if (method_exists('Html', 'displayRightError')) {
+            Html::displayRightError($additional);
+            return;
+        }
+        if (class_exists('\\Glpi\\Exception\\Http\\AccessDeniedHttpException')) {
+            throw new \Glpi\Exception\Http\AccessDeniedHttpException($additional);
+        }
+        http_response_code(403);
+        if ($additional !== '') {
+            echo htmlspecialchars($additional, ENT_QUOTES, 'UTF-8');
+        }
+        exit;
+    }
+}
+
+if (!function_exists('mafasa_can_view_all_entities')) {
+    /**
+     * Usuário logado enxerga todas as entidades?
+     */
+    function mafasa_can_view_all_entities(): bool
+    {
+        if (!class_exists('Session')) {
+            return false;
+        }
+        if (!method_exists('Session', 'getLoginUserID') || !method_exists('Session', 'canViewAllEntities')) {
+            return false;
+        }
+        try {
+            return (bool) (Session::getLoginUserID() && Session::canViewAllEntities());
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+}
+
+if (!function_exists('mafasa_visible_entities')) {
+    /**
+     * Entidades visíveis para o usuário. [] quando vê todas; senão a lista de
+     * IDs ativos (inclui 0, que é a entidade raiz), sem duplicatas.
+     *
+     * @return array<int,int>
+     */
+    function mafasa_visible_entities(): array
+    {
+        if (mafasa_can_view_all_entities()) {
+            return [];
+        }
+        $raw = $_SESSION['glpiactiveentities'] ?? [];
+        if (!is_array($raw)) {
+            return [];
+        }
+        $out = [];
+        foreach ($raw as $value) {
+            if (!is_scalar($value)) {
+                continue;
+            }
+            $id = (int) $value;
+            if ($id < 0) {
+                continue;
+            }
+            if (!in_array($id, $out, true)) {
+                $out[] = $id;
+            }
+        }
+        return array_values($out);
+    }
+}
+
+if (!function_exists('mafasa_entity_sql')) {
+    /**
+     * Cláusula de restrição por entidade para o alias informado.
+     * - vê todas as entidades: ''
+     * - lista vazia (fail-closed): ' AND 1=0'
+     * - senão: ' AND `alias`.`entities_id` IN (0,1,...)'
+     */
+    function mafasa_entity_sql(string $alias = 't'): string
+    {
+        if (mafasa_can_view_all_entities()) {
+            return '';
+        }
+        $entities = mafasa_visible_entities();
+        if ($entities === []) {
+            return ' AND 1=0';
+        }
+        $alias = str_replace('`', '', $alias);
+        $ids = array_map('intval', $entities);
+        return ' AND `' . $alias . '`.`entities_id` IN (' . implode(',', $ids) . ')';
+    }
+}
