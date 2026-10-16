@@ -105,7 +105,7 @@ function mf_print_cell(string $key, $value): string
     return htmlspecialchars((string)$value);
 }
 
-$webdir = Plugin::getWebDir('mafasa');
+$webdir = mafasa_web_dir('mafasa');
 $cssUrl = $webdir . '/public/css/mafasa-print.css';
 $backQs = http_build_query($_GET);
 $pageTitle = ($headerTitle !== '') ? $headerTitle : __('Relatório de Ativos', 'mafasa');

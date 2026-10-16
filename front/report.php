@@ -110,7 +110,7 @@ Html::header(
     \GlpiPlugin\Mafasa\Report::class
 );
 
-$webdir = Plugin::getWebDir('mafasa');
+$webdir = mafasa_web_dir('mafasa');
 
 echo "<link rel='stylesheet' href='" . mf_report_esc($webdir . '/public/css/mafasa.css') . "'>";
 
