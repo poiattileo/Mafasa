@@ -10,7 +10,7 @@
 
 namespace GlpiPlugin\Mafasa;
 
-class Report
+class Report extends \CommonGLPI
 {
     public const DEFAULT_TYPE = 'Computer';
 
@@ -418,19 +418,54 @@ class Report
         return ['sql' => implode(' AND ', $clauses), 'params' => $clean];
     }
 
-    // ---- Integração mínima com o menu Ferramentas (menu_toadd) ----
+    // ---- Integração com o menu Ferramentas (menu_toadd) ----
+    // Precisa estender CommonGLPI: o GLPI só exibe no menu classes
+    // registradas que herdam dele.
 
-    public static function getTypeName(int $nb = 0): string
+    public static function getTypeName($nb = 0)
     {
         return $nb > 1 ? 'Relatórios de Ativos' : 'Relatório de Ativos';
+    }
+
+    public static function getIcon()
+    {
+        return 'ti ti-report-analytics';
+    }
+
+    /**
+     * Menu visível se o usuário pode ver ao menos uma categoria de ativo.
+     */
+    public static function canView(): bool
+    {
+        foreach (self::getCategories() as $itemtype => $label) {
+            if (!class_exists($itemtype) || !is_callable([$itemtype, 'canView'])) {
+                continue;
+            }
+            try {
+                if ($itemtype::canView()) {
+                    return true;
+                }
+            } catch (\Throwable $e) {
+            }
+        }
+        return false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 
     /**
      * Conteúdo do menu Ferramentas → Mafasa. Aponta para a tela de
      * relatório (categoria padrão = Computer).
      */
-    public static function getMenuContent(): array
+    public static function getMenuContent()
     {
+        if (!self::canView()) {
+            return [];
+        }
+        global $CFG_GLPI;
         $base = '/plugins/mafasa';
         if (function_exists('mafasa_web_dir')) {
             try {
@@ -439,9 +474,18 @@ class Report
                 // mantém o fallback
             }
         }
+        // getMenuContent espera caminho sem root_doc (GLPI prefixa sozinho)
+        $root = (isset($CFG_GLPI['root_doc']) && is_string($CFG_GLPI['root_doc'])) ? $CFG_GLPI['root_doc'] : '';
+        if ($root !== '' && str_starts_with($base, $root)) {
+            $base = substr($base, strlen($root));
+            if ($base === '' || $base[0] !== '/') {
+                $base = '/' . ltrim($base, '/');
+            }
+        }
         return [
             'title' => self::getTypeName(),
             'page'  => $base . '/front/report.php',
+            'icon'  => self::getIcon(),
             'links' => [
                 'search' => $base . '/front/report.php',
             ],

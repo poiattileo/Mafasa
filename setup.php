@@ -66,6 +66,9 @@ function plugin_init_mafasa(): void
         require_once __DIR__ . '/vendor/autoload.php';
     }
 
+    // Registra a classe do menu (precisa herdar CommonGLPI p/ aparecer)
+    Plugin::registerClass(\GlpiPlugin\Mafasa\Report::class);
+
     // CSRF compliance - no GLPI 12 o hook foi removido (CheckCsrfListener cuida);
     // mantém true apenas no GLPI <12 para proteger POST.
     if (!mafasa_is_glpi12_plus()) {
