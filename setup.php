@@ -75,49 +75,12 @@ function plugin_init_mafasa(): void
         $PLUGIN_HOOKS['csrf_compliant']['mafasa'] = true;
     }
 
-    // Menu - apenas em Ferramentas (evita duplicar em Plug-ins)
+    // Menu - apenas em Ferramentas (evita duplicar em Plug-ins).
+    // O submenu por categoria vem de Report::getMenuContent()['options'] —
+    // os hooks menu_entry/submenu_entry do GLPI 10 não existem mais no 11/12.
     $PLUGIN_HOOKS['menu_toadd']['mafasa'] = [
-        'tools' => 'GlpiPlugin\\Mafasa\\Report',
+        'tools' => \GlpiPlugin\Mafasa\Report::class,
     ];
-    $PLUGIN_HOOKS['menu_entry']['mafasa'] = 'front/report.php';
-
-    // Usa mafasa_web_dir para suportar plugins/ ou marketplace/ sem duplicar root_doc.
-    // No GLPI 12 Plugin::getWebDir foi removido — helper faz fallback via root_doc.
-    $mafasa_webdir = mafasa_web_dir('mafasa');
-    // Submenu espera caminho sem root_doc (GLPI prepend root_doc internamente), então remove se já contém
-    $mafasa_webdir_noroot = $mafasa_webdir;
-    if (isset($CFG_GLPI['root_doc']) && $CFG_GLPI['root_doc'] !== '' && str_starts_with($mafasa_webdir, $CFG_GLPI['root_doc'])) {
-        $mafasa_webdir_noroot = substr($mafasa_webdir, strlen($CFG_GLPI['root_doc']));
-        if ($mafasa_webdir_noroot === '' || $mafasa_webdir_noroot[0] !== '/') {
-            $mafasa_webdir_noroot = '/' . ltrim($mafasa_webdir_noroot, '/');
-        }
-    }
-    $PLUGIN_HOOKS['submenu_entry']['mafasa']['report'] = [
-        'title' => 'Relatórios de Ativos',
-        'page'  => $mafasa_webdir_noroot . '/front/report.php',
-        'links' => [
-            'search' => $mafasa_webdir_noroot . '/front/report.php',
-        ]
-    ];
-    // Submenu por categoria (Task 2): uma entrada por tipo de ativo.
-    $mafasa_report_class = 'GlpiPlugin\\Mafasa\\Report';
-    $mafasa_report_file = __DIR__ . '/src/Report.php';
-    if (!class_exists($mafasa_report_class) && is_file($mafasa_report_file)) {
-        require_once $mafasa_report_file;
-    }
-    if (class_exists($mafasa_report_class)) {
-        foreach ($mafasa_report_class::getCategories() as $mafasa_itemtype => $mafasa_label) {
-            $mafasa_slug = 'report_' . strtolower((string) $mafasa_itemtype);
-            $mafasa_page = $mafasa_webdir_noroot . '/front/report.php?type=' . rawurlencode((string) $mafasa_itemtype);
-            $PLUGIN_HOOKS['submenu_entry']['mafasa'][$mafasa_slug] = [
-                'title' => $mafasa_label,
-                'page'  => $mafasa_page,
-                'links' => [
-                    'search' => $mafasa_page,
-                ]
-            ];
-        }
-    }
     $PLUGIN_HOOKS['config_page']['mafasa'] = 'front/config.php';
 
     // CSS - relativo deixa GLPI resolver marketplace/plugins corretamente.

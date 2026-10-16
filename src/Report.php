@@ -433,6 +433,27 @@ class Report extends \CommonGLPI
     }
 
     /**
+     * Ícones Tabler por categoria (usados no submenu do menu).
+     *
+     * @return array<string,string>
+     */
+    public static function getCategoryIcons(): array
+    {
+        return [
+            'Computer'         => 'ti ti-device-laptop',
+            'Monitor'          => 'ti ti-device-desktop',
+            'Printer'          => 'ti ti-printer',
+            'NetworkEquipment' => 'ti ti-network',
+            'Peripheral'       => 'ti ti-usb',
+            'Phone'            => 'ti ti-phone',
+            'Software'         => 'ti ti-apps',
+            'Rack'             => 'ti ti-server',
+            'Enclosure'        => 'ti ti-box',
+            'PDU'              => 'ti ti-bolt',
+        ];
+    }
+
+    /**
      * Menu visível se o usuário pode ver ao menos uma categoria de ativo.
      */
     public static function canView(): bool
@@ -457,8 +478,11 @@ class Report extends \CommonGLPI
     }
 
     /**
-     * Conteúdo do menu Ferramentas → Mafasa. Aponta para a tela de
-     * relatório (categoria padrão = Computer).
+     * Conteúdo do menu Ferramentas → Mafasa.
+     *
+     * Estrutura moderna do GLPI 11/12: 'options' vira o submenu — os
+     * hooks menu_entry/submenu_entry do GLPI 10 foram removidos do núcleo.
+     * Espelha o getMenuContent() do plugin Protocolo, que funciona em produção.
      */
     public static function getMenuContent()
     {
@@ -482,13 +506,25 @@ class Report extends \CommonGLPI
                 $base = '/' . ltrim($base, '/');
             }
         }
-        return [
+
+        $icons = self::getCategoryIcons();
+        $menu = [
             'title' => self::getTypeName(),
             'page'  => $base . '/front/report.php',
             'icon'  => self::getIcon(),
-            'links' => [
-                'search' => $base . '/front/report.php',
-            ],
         ];
+        $menu['options']['report'] = [
+            'title' => self::getTypeName(),
+            'page'  => $base . '/front/report.php',
+            'icon'  => self::getIcon(),
+        ];
+        foreach (self::getCategories() as $itemtype => $label) {
+            $menu['options']['report_' . strtolower($itemtype)] = [
+                'title' => $label,
+                'page'  => $base . '/front/report.php?type=' . rawurlencode($itemtype),
+                'icon'  => $icons[$itemtype] ?? 'ti ti-file-analytics',
+            ];
+        }
+        return $menu;
     }
 }
