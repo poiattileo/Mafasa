@@ -7,7 +7,7 @@
 
 require_once __DIR__ . '/src/compat.php';
 
-define('PLUGIN_MAFASA_VERSION', '1.1.0');
+define('PLUGIN_MAFASA_VERSION', '1.1.1');
 define('PLUGIN_MAFASA_MIN_GLPI', '11.0.0');
 define('PLUGIN_MAFASA_MAX_GLPI', '12.0.99');
 define('PLUGIN_MAFASA_NAMESPACE', 'GlpiPlugin\\Mafasa');
