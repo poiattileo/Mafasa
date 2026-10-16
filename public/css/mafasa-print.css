@@ -1,0 +1,175 @@
+/**
+ * Mafasa - Relatórios de Ativos (impressão/PDF)
+ * Usado só por front/print.php. Prefixo de classes: mf-print-
+ */
+
+@page {
+    size: A4 landscape;
+    margin: 12mm;
+}
+
+:root {
+    --mf-print-blue: #1a73b5;
+    --mf-print-gray: #6b7280;
+    --mf-print-border: #9ca3af;
+    --mf-print-zebra: #eff6ff;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #111827;
+    margin: 0;
+    background: #fff;
+}
+
+.mf-print-actions {
+    display: flex;
+    gap: 8px;
+    margin: 12px;
+}
+
+.mf-print-btn {
+    padding: 8px 14px;
+    border: 1px solid var(--mf-print-blue);
+    border-radius: 6px;
+    background: var(--mf-print-blue);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.mf-print-btn-secondary {
+    background: #fff;
+    color: var(--mf-print-blue);
+}
+
+.mf-print-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--mf-print-blue);
+    margin: 0 0 10px;
+}
+
+.mf-print-brand {
+    flex: 0 0 auto;
+}
+
+.mf-print-logo {
+    max-height: 64px;
+    max-width: 220px;
+    object-fit: contain;
+}
+
+.mf-print-logo-fallback {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--mf-print-blue);
+    border: 1px solid var(--mf-print-border);
+    padding: 10px 16px;
+    white-space: nowrap;
+}
+
+.mf-print-title h1 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    color: #111827;
+}
+
+.mf-print-meta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 11px;
+    color: var(--mf-print-gray);
+}
+
+.mf-print-warning {
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    color: #92400e;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+}
+
+.mf-print-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.mf-print-table th,
+.mf-print-table td {
+    border: 1px solid var(--mf-print-border);
+    padding: 5px 7px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.mf-print-table thead {
+    display: table-header-group;
+}
+
+.mf-print-table thead th {
+    background: var(--mf-print-blue);
+    color: #fff;
+    font-weight: 700;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+.mf-print-table tbody tr:nth-child(even) td {
+    background: var(--mf-print-zebra);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+.mf-print-table tr,
+.mf-print-table td,
+.mf-print-table th {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.mf-print-empty {
+    color: var(--mf-print-gray);
+    text-align: center;
+    padding: 20px;
+}
+
+.mf-print-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 10px;
+    padding-top: 6px;
+    border-top: 1px solid var(--mf-print-border);
+    font-size: 10px;
+    color: var(--mf-print-gray);
+}
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        font-size: 10px;
+    }
+
+    .mf-print-header,
+    .mf-print-footer {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+}

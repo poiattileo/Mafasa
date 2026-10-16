@@ -1,0 +1,24 @@
+{
+    "name": "ure-jales/mafasa",
+    "description": "Plugin GLPI - Mafasa Relatórios de Ativos (relatórios por categoria com impressão/PDF institucional URE Jales)",
+    "type": "glpi-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Leonardo Poiatti Fação",
+            "homepage": "https://github.com/poiattileo/Mafasa"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "GlpiPlugin\\Mafasa\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

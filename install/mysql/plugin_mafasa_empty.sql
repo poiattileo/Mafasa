@@ -1,0 +1,1 @@
+-- v1 sem tabelas próprias (só config via glpi_configs, contexto plugin:mafasa)
