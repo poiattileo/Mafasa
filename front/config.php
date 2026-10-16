@@ -1,6 +1,6 @@
 <?php
 /**
- * Tela de configuração do plugin Mafasa (Task 5).
+ * Tela de configuração do plugin Mafasa (v2).
  *
  * Só admin com direito `config` UPDATE. Salva header_title/footer_text e
  * upload opcional de logo (files/_plugins/mafasa/ com fallback public/img/)
@@ -16,7 +16,7 @@ use GlpiPlugin\Mafasa\Config as MafasaConfig;
 Session::checkLoginUser();
 
 if (!Session::haveRight('config', UPDATE)) {
-    Html::displayRightError();
+    mafasa_display_right_error();
 }
 
 global $CFG_GLPI;
@@ -71,31 +71,47 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
                     } catch (Throwable $e) {
                         $mime = '';
                     }
-                    if ($mime === '' && function_exists('getimagesize')) {
-                        $info = @getimagesize($tmp);
-                        $mime = is_array($info) && isset($info['mime']) ? (string) $info['mime'] : '';
+                    if ($mime === '' && class_exists('finfo')) {
+                        try {
+                            $fi = new finfo(FILEINFO_MIME_TYPE);
+                            $mime = (string) $fi->file($tmp);
+                        } catch (Throwable $e) {
+                            $mime = '';
+                        }
                     }
                     if ($mime !== '' && $mime !== $allowedExt[$ext]) {
                         $errors[] = __('O conteúdo do arquivo não confere com a extensão.', 'mafasa');
                     } else {
                         // Destino preferido: files/_plugins/mafasa/ (gravável).
                         $destDir = (defined('GLPI_PLUGIN_DOC_DIR') ? (string) GLPI_PLUGIN_DOC_DIR : ((defined('GLPI_ROOT') ? (string) GLPI_ROOT : '') . '/files/_plugins')) . '/mafasa';
-                        $destKind = 'files';
                         if (!is_dir($destDir)) {
-                            @mkdir($destDir, 0775, true);
+                            try {
+                                mkdir($destDir, 0775, true);
+                            } catch (Throwable $e) {
+                                // a checagem abaixo cobre o fallback
+                            }
                         }
                         if (!is_dir($destDir) || !is_writable($destDir)) {
                             // Fallback: public/img/ dentro do plugin.
                             $destDir = __DIR__ . '/../public/img';
-                            $destKind = 'public';
                         }
                         $safeName = 'logo-custom-' . date('Ymd-His') . '.' . $ext;
                         $destFile = rtrim($destDir, '/\\') . '/' . $safeName;
-                        if (!@move_uploaded_file($tmp, $destFile)) {
+                        $moved = false;
+                        try {
+                            $moved = move_uploaded_file($tmp, $destFile);
+                        } catch (Throwable $e) {
+                            $moved = false;
+                        }
+                        if (!$moved) {
                             $errors[] = __('Não foi possível salvar a logo no servidor.', 'mafasa');
                         } else {
-                            @chmod($destFile, 0644);
-                            $newLogoPath = ($destKind === 'files') ? $safeName : $safeName;
+                            try {
+                                chmod($destFile, 0644);
+                            } catch (Throwable $e) {
+                                // permissões opcionais
+                            }
+                            $newLogoPath = $safeName;
                         }
                     }
                 }
@@ -119,7 +135,10 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
     }
 }
 
-$cfg = MafasaConfig::initDefaults();
+$cfg = [
+    'header_title' => MafasaConfig::getHeaderTitle(),
+    'footer_text'  => MafasaConfig::getFooterText(),
+];
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !$success) {
     // Reexibe o que o usuário digitou quando houve erro.
     $cfg['header_title'] = trim((string) ($_POST['header_title'] ?? $cfg['header_title']));
@@ -134,9 +153,7 @@ Html::header(
 );
 
 $csrfToken = mafasa_csrf_token();
-$currentLogoFile = MafasaConfig::getLogoFile();
-$defaultLogoFile = __DIR__ . '/../public/img/logo-ure-jales.png';
-$webdir = mafasa_web_dir('mafasa');
+$logoUrl = MafasaConfig::getLogoUrl();
 
 echo "<div class='mf-page'>";
 echo "<div class='mf-page-header'>";
@@ -164,13 +181,8 @@ echo "<input type='text' name='footer_text' maxlength='255' value='" . htmlspeci
 echo "</label>";
 
 echo "<div class='mf-field'><span>" . htmlspecialchars(__('Logo atual', 'mafasa')) . "</span>";
-if ($currentLogoFile !== '' && is_file($currentLogoFile)) {
-    $logoUrl = $webdir . '/public/img/' . rawurlencode(basename($currentLogoFile));
+if ($logoUrl !== '') {
     echo "<img src='" . htmlspecialchars($logoUrl) . "' alt='logo' style='max-height:80px'>";
-    echo "<div class='mf-hint'>" . htmlspecialchars(basename($currentLogoFile)) . "</div>";
-} elseif (is_file($defaultLogoFile)) {
-    echo "<img src='" . htmlspecialchars($webdir) . "/public/img/logo-ure-jales.png' alt='logo' style='max-height:80px'>";
-    echo "<div class='mf-hint'>" . htmlspecialchars(__('Logo padrão (URE Jales) embutida.', 'mafasa')) . "</div>";
 } else {
     echo "<div class='mf-hint'>" . htmlspecialchars(__('Sem logo no disco — o impresso usa texto "URE Jales".', 'mafasa')) . "</div>";
 }

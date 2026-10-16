@@ -54,12 +54,8 @@ class Config
                 // Fallback por chave (algumas versões expõem só o getter singular).
                 foreach ($defaults as $key => $def) {
                     try {
-                        // Assinatura GLPI: getConfigurationValue($name, $context = null).
-                        $ref = new \ReflectionMethod(GlpiConfig::class, 'getConfigurationValue');
-                        $nParams = $ref->getNumberOfParameters();
-                        $val = ($nParams >= 2)
-                            ? GlpiConfig::getConfigurationValue($key, self::CONTEXT)
-                            : GlpiConfig::getConfigurationValue(self::CONTEXT . ':' . $key);
+                        // Assinatura GLPI: getConfigurationValue(string $context, string $name).
+                        $val = GlpiConfig::getConfigurationValue(self::CONTEXT, $key);
                         if ($val !== null && $val !== false) {
                             $stored[$key] = $val;
                         }
@@ -96,6 +92,24 @@ class Config
         }
         $defaults = self::getDefaults();
         return (string) ($defaults[$key] ?? $default);
+    }
+
+    /**
+     * Título do cabeçalho do impresso (cai para o padrão quando vazio).
+     */
+    public static function getHeaderTitle(): string
+    {
+        $value = trim(self::get('header_title', ''));
+        return $value !== '' ? $value : self::DEFAULT_HEADER_TITLE;
+    }
+
+    /**
+     * Rodapé do impresso (cai para o padrão quando vazio).
+     */
+    public static function getFooterText(): string
+    {
+        $value = trim(self::get('footer_text', ''));
+        return $value !== '' ? $value : self::DEFAULT_FOOTER_TEXT;
     }
 
     /**
@@ -200,6 +214,47 @@ class Config
             if ($file !== '' && is_file($file)) {
                 return $file;
             }
+        }
+
+        return '';
+    }
+
+    /**
+     * URL/URI da logo do relatório.
+     *
+     * Prioriza a logo enviada (files/_plugins/mafasa/, storage v1) convertida em
+     * data URI base64 (mime por extensão: png/jpg/jpeg/gif/svg; ignora arquivos
+     * maiores que 2 MB). Sem upload válido, cai para a logo padrão embutida
+     * public/img/logo-ure-jales.png quando ela existir; senão retorna ''.
+     */
+    public static function getLogoUrl(): string
+    {
+        $file = self::getLogoFile();
+        if ($file !== '' && is_file($file)) {
+            $size = filesize($file);
+            if ($size !== false && $size > 0 && $size <= 2 * 1024 * 1024) {
+                $ext = strtolower((string) pathinfo($file, PATHINFO_EXTENSION));
+                $mimes = [
+                    'png'  => 'image/png',
+                    'jpg'  => 'image/jpeg',
+                    'jpeg' => 'image/jpeg',
+                    'gif'  => 'image/gif',
+                    'svg'  => 'image/svg+xml',
+                ];
+                if (isset($mimes[$ext])) {
+                    $data = file_get_contents($file);
+                    if ($data !== false && $data !== '') {
+                        return 'data:' . $mimes[$ext] . ';base64,' . base64_encode($data);
+                    }
+                }
+            }
+        }
+
+        $php = function_exists('mafasa_php_dir') ? (string) mafasa_php_dir('mafasa') : __DIR__ . '/..';
+        $defaultFile = rtrim($php, '/\\') . '/public/img/logo-ure-jales.png';
+        if (is_file($defaultFile)) {
+            $web = function_exists('mafasa_web_dir') ? (string) mafasa_web_dir('mafasa') : '';
+            return $web . '/public/img/logo-ure-jales.png';
         }
 
         return '';
