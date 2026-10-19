@@ -22,6 +22,10 @@ class TicketsReport
 
     public static function canView(): bool
     {
+        // Direito próprio do plugin (Configurar → Perfis → aba Relatórios).
+        if (!function_exists('mafasa_can_access') || !mafasa_can_access()) {
+            return false;
+        }
         if (!class_exists('\\Ticket') || !is_callable(['\\Ticket', 'canView'])) {
             return false;
         }

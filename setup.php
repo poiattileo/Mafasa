@@ -7,7 +7,7 @@
 
 require_once __DIR__ . '/src/compat.php';
 
-define('PLUGIN_MAFASA_VERSION', '1.2.0');
+define('PLUGIN_MAFASA_VERSION', '1.3.0');
 define('PLUGIN_MAFASA_MIN_GLPI', '11.0.0');
 define('PLUGIN_MAFASA_MAX_GLPI', '12.0.99');
 define('PLUGIN_MAFASA_NAMESPACE', 'GlpiPlugin\\Mafasa');
@@ -68,6 +68,10 @@ function plugin_init_mafasa(): void
 
     // Registra a classe do menu (precisa herdar CommonGLPI p/ aparecer)
     Plugin::registerClass(\GlpiPlugin\Mafasa\Report::class);
+
+    // Aba "Relatórios" em Configurar → Perfis: liga/desliga o acesso ao plugin
+    // por perfil (direito plugin_mafasa_access; padrão "Não").
+    Plugin::registerClass(\GlpiPlugin\Mafasa\Profile::class, ['addtabon' => 'Profile']);
 
     // CSRF compliance - no GLPI 12 o hook foi removido (CheckCsrfListener cuida);
     // mantém true apenas no GLPI <12 para proteger POST.

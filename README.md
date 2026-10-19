@@ -27,6 +27,18 @@ public/css/mafasa.css, public/css/mafasa-print.css, public/js/app.js
 public/img/logo-ure-jales.png
 ```
 
+## Permissões
+
+O acesso ao plugin é controlado por perfil, com uma única opção **Sim/Não**
+(padrão **Não**):
+
+1. Configurar → Perfis → abrir o perfil desejado → aba **Relatórios**.
+2. Marcar **Sim** em "Acesso aos relatórios" e salvar.
+
+O direito é gravado em `glpi_profilerights` com o nome
+`plugin_mafasa_access`. Enquanto não existir a linha (ou o valor for 0), o menu
+Ferramentas → Relatórios não aparece e as telas respondem "sem permissão".
+
 ## Relatórios
 
 - **Ativos** (`front/report.php`): multi-tipo, filtros, colunas desmarcáveis.

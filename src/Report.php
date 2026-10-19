@@ -157,6 +157,11 @@ class Report extends \CommonGLPI
      */
     public static function canView(): bool
     {
+        // Direito próprio do plugin (Configurar → Perfis → aba Relatórios).
+        // Padrão "Não": sem a linha em glpi_profilerights o acesso é negado.
+        if (!function_exists('mafasa_can_access') || !mafasa_can_access()) {
+            return false;
+        }
         foreach (array_keys(self::coreTypeMeta()) as $core) {
             if (self::isCoreViewable($core)) {
                 return true;

@@ -238,3 +238,41 @@ if (!function_exists('mafasa_entity_sql')) {
         return ' AND `' . $alias . '`.`entities_id` IN (' . implode(',', $ids) . ')';
     }
 }
+
+/** Nome do direito do plugin gravado em glpi_profilerights. */
+if (!defined('MAFASA_RIGHT_ACCESS')) {
+    define('MAFASA_RIGHT_ACCESS', 'plugin_mafasa_access');
+}
+
+if (!function_exists('mafasa_can_access')) {
+    /**
+     * Direito de acesso ao plugin, definido por perfil em
+     * Configurar → Perfis → (perfil) → aba Relatórios (Sim/Não).
+     *
+     * Padrão "Não": quando não existe linha em glpi_profilerights o valor é 0
+     * e o acesso é negado (fail-closed).
+     */
+    function mafasa_can_access(): bool
+    {
+        if (!class_exists('Session') || !method_exists('Session', 'haveRight')) {
+            return false;
+        }
+        $read = defined('READ') ? (int) READ : 1;
+        try {
+            return (bool) Session::haveRight(MAFASA_RIGHT_ACCESS, $read);
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+}
+
+if (!function_exists('mafasa_access_help')) {
+    /**
+     * Texto de ajuda mostrado quando o acesso é negado pelo direito do plugin.
+     */
+    function mafasa_access_help(): string
+    {
+        return 'Solicite a um administrador que marque "Sim" em '
+            . 'Configurar → Perfis → (seu perfil) → aba Relatórios.';
+    }
+}
