@@ -254,7 +254,17 @@ class Config
         $defaultFile = rtrim($php, '/\\') . '/public/img/logo-ure-jales.png';
         if (is_file($defaultFile)) {
             $web = function_exists('mafasa_web_dir') ? (string) mafasa_web_dir('mafasa') : '';
-            return $web . '/public/img/logo-ure-jales.png';
+            $url = $web . '/public/img/logo-ure-jales.png';
+            // Cache-bust: muda a URL quando a logo muda, senão o navegador
+            // continua servindo a imagem antiga em cache.
+            $version = @filemtime($defaultFile);
+            if (!$version) {
+                $version = defined('PLUGIN_MAFASA_VERSION') ? (string) PLUGIN_MAFASA_VERSION : '';
+            }
+            if ($version !== '' && $version !== false) {
+                $url .= (strpos($url, '?') === false ? '?' : '&') . 'v=' . rawurlencode((string) $version);
+            }
+            return $url;
         }
 
         return '';
