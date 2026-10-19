@@ -146,7 +146,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && !$success) {
 }
 
 Html::header(
-    __('Configuração — Mafasa', 'mafasa'),
+    __('Configuração — [URE] Mafasa', 'mafasa'),
     $_SERVER['PHP_SELF'],
     'config',
     'plugins'
@@ -157,7 +157,7 @@ $logoUrl = MafasaConfig::getLogoUrl();
 
 echo "<div class='mf-page'>";
 echo "<div class='mf-page-header'>";
-echo "<h2>" . htmlspecialchars(__('Configuração — Mafasa', 'mafasa')) . "</h2>";
+echo "<h2>" . htmlspecialchars(__('Configuração — [URE] Mafasa', 'mafasa')) . "</h2>";
 echo "</div>";
 
 if ($success) {

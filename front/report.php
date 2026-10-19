@@ -104,7 +104,7 @@ function mf_report_cell(string $key, $value): string
 }
 
 Html::header(
-    __('Mafasa — Relatórios de Ativos', 'mafasa'),
+    __('[URE] Mafasa — Relatórios de Ativos', 'mafasa'),
     $_SERVER['PHP_SELF'],
     'tools',
     \GlpiPlugin\Mafasa\Report::class
