@@ -690,15 +690,32 @@ class BoardsReport
      */
     private static function sqlFailMessage(\Throwable $e): string
     {
-        $msg = trim((string) $e->getMessage());
-        $pos = strpos($msg, ' in ');
-        if ($pos !== false) {
-            $msg = substr($msg, 0, $pos);
+        $raw = trim((string) $e->getMessage());
+
+        // Guarda a consulta completa em files/_log/mafasa-sql.log (diagnóstico).
+        if (class_exists('Toolbox') && method_exists('Toolbox', 'logInFile')) {
+            try {
+                \Toolbox::logInFile('mafasa-sql', $raw . "\n", true);
+            } catch (\Throwable $ignored) {
+                // sem log disponível
+            }
         }
-        if (function_exists('mb_strlen') && mb_strlen($msg) > 300) {
-            $msg = mb_substr($msg, 0, 300) . '...';
+
+        // GLPI monta: 'MySQL query error: <detalhe> (<errno>) in SQL query "<SQL>".'
+        // Corta apenas na SQL: o detalhe do MySQL traz o trecho ofensor
+        // ("... near 'XXX' at line N ..."), que é o que interessa.
+        foreach ([' in SQL query', ' in query'] as $needle) {
+            $pos = strpos($raw, $needle);
+            if ($pos !== false) {
+                $raw = substr($raw, 0, $pos);
+                break;
+            }
+        }
+        $raw = trim((string) preg_replace('/^MySQL query error:\s*/i', '', $raw));
+        if (function_exists('mb_strlen') && function_exists('mb_substr') && mb_strlen($raw) > 400) {
+            $raw = mb_substr($raw, 0, 400) . '...';
         }
         return 'Não foi possível executar a consulta do relatório.'
-            . ($msg !== '' ? ' [' . $msg . ']' : '');
+            . ($raw !== '' ? ' [' . $raw . ']' : '');
     }
 }
