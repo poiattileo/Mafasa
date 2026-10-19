@@ -229,7 +229,7 @@ class TicketsReport
             $row = (is_object($res) && method_exists($res, 'fetch_assoc')) ? $res->fetch_assoc() : null;
             $total = is_array($row) ? (int) ($row['total'] ?? 0) : 0;
         } catch (\Throwable $e) {
-            return self::errorResult(1, 1, 'Não foi possível executar a consulta do relatório.');
+            return self::errorResult(1, 1, self::sqlFailMessage($e));
         }
 
         $maxPage = max(1, (int) ceil($total / $limit));
@@ -256,7 +256,7 @@ class TicketsReport
                 'total'    => $total,
                 'page'     => $page,
                 'max_page' => $maxPage,
-                'error'    => 'Não foi possível executar a consulta do relatório.',
+                'error'    => self::sqlFailMessage($e),
             ];
         }
 
@@ -361,7 +361,7 @@ class TicketsReport
                 break;
             case 'group':
                 $sql = 'SELECT g.`name` AS mf_key' . str_replace('COUNT(DISTINCT t.`id`)', 'COUNT(DISTINCT tg.`tickets_id`)', $metricSel)
-                    . ' FROM `glpi_tickets_groups` tg'
+                    . ' FROM `glpi_groups_tickets` tg'
                     . ' INNER JOIN `glpi_groups` g ON g.`id` = tg.`groups_id`'
                     . ' INNER JOIN `glpi_tickets` t ON t.`id` = tg.`tickets_id`'
                     . ' ' . self::replaceTicketAlias($where)
@@ -411,7 +411,7 @@ class TicketsReport
                 $totals['avg_resolution'] = ($row['mf_avg_resolution'] !== null) ? (float) $row['mf_avg_resolution'] : null;
             }
         } catch (\Throwable $e) {
-            return ['rows' => [], 'totals' => [], 'error' => 'Não foi possível executar a consulta do relatório.'];
+            return ['rows' => [], 'totals' => [], 'error' => self::sqlFailMessage($e)];
         }
 
         $rows = [];
@@ -427,7 +427,7 @@ class TicketsReport
                 ];
             }
         } catch (\Throwable $e) {
-            return ['rows' => [], 'totals' => [], 'error' => 'Não foi possível executar a consulta do relatório.'];
+            return ['rows' => [], 'totals' => [], 'error' => self::sqlFailMessage($e)];
         }
 
         return ['rows' => $rows, 'totals' => $totals, 'error' => null];
@@ -599,7 +599,7 @@ class TicketsReport
             if ($key === 'groups_id') {
                 $id = (int) $value;
                 if ($id > 0) {
-                    $sql .= ' AND EXISTS (SELECT 1 FROM `glpi_tickets_groups` gf'
+                    $sql .= ' AND EXISTS (SELECT 1 FROM `glpi_groups_tickets` gf'
                         . ' WHERE gf.`tickets_id` = t.`id` AND gf.`groups_id` = ' . $id . ' AND gf.`type` = 1)';
                 }
                 continue;
@@ -645,7 +645,7 @@ class TicketsReport
             . '  FROM `glpi_tickets_users` tu JOIN `glpi_users` u ON u.`id` = tu.`users_id`'
             . '  WHERE tu.`tickets_id` = t.`id` AND tu.`type` = 1) AS mf_users_id_tech,'
             . ' (SELECT GROUP_CONCAT(g.`name` ORDER BY g.`name` SEPARATOR \', \')'
-            . '  FROM `glpi_tickets_groups` tg JOIN `glpi_groups` g ON g.`id` = tg.`groups_id`'
+            . '  FROM `glpi_groups_tickets` tg JOIN `glpi_groups` g ON g.`id` = tg.`groups_id`'
             . '  WHERE tg.`tickets_id` = t.`id` AND tg.`type` = 1) AS mf_groups_id,'
             . ' e.`name` AS mf_entities_id,'
             . ' t.`date` AS mf_date, t.`takeintoaccountdate` AS mf_takeintoaccountdate,'
@@ -789,5 +789,22 @@ class TicketsReport
             'max_page' => max(1, $maxPage),
             'error'    => $message,
         ];
+    }
+
+    /**
+     * Mensagem de falha de SQL com o detalhe do banco (facilita o diagnóstico).
+     */
+    private static function sqlFailMessage(\Throwable $e): string
+    {
+        $msg = trim((string) $e->getMessage());
+        $pos = strpos($msg, ' in ');
+        if ($pos !== false) {
+            $msg = substr($msg, 0, $pos);
+        }
+        if (function_exists('mb_strlen') && mb_strlen($msg) > 300) {
+            $msg = mb_substr($msg, 0, 300) . '...';
+        }
+        return 'Não foi possível executar a consulta do relatório.'
+            . ($msg !== '' ? ' [' . $msg . ']' : '');
     }
 }

@@ -199,7 +199,7 @@ class BoardsReport
             $row = (is_object($res) && method_exists($res, 'fetch_assoc')) ? $res->fetch_assoc() : null;
             $total = is_array($row) ? (int) ($row['total'] ?? 0) : 0;
         } catch (\Throwable $e) {
-            return self::errorResult(1, 1, 'Não foi possível executar a consulta do relatório.');
+            return self::errorResult(1, 1, self::sqlFailMessage($e));
         }
 
         $maxPage = max(1, (int) ceil($total / $limit));
@@ -241,7 +241,7 @@ class BoardsReport
                 'total'    => $total,
                 'page'     => $page,
                 'max_page' => $maxPage,
-                'error'    => 'Não foi possível executar a consulta do relatório.',
+                'error'    => self::sqlFailMessage($e),
             ];
         }
 
@@ -312,7 +312,7 @@ class BoardsReport
                 $totals['done'] = (int) ($row['mf_done'] ?? 0);
             }
         } catch (\Throwable $e) {
-            return ['rows' => [], 'totals' => [], 'error' => 'Não foi possível executar a consulta do relatório.'];
+            return ['rows' => [], 'totals' => [], 'error' => self::sqlFailMessage($e)];
         }
 
         switch ($mode) {
@@ -384,7 +384,7 @@ class BoardsReport
                 ];
             }
         } catch (\Throwable $e) {
-            return ['rows' => [], 'totals' => [], 'error' => 'Não foi possível executar a consulta do relatório.'];
+            return ['rows' => [], 'totals' => [], 'error' => self::sqlFailMessage($e)];
         }
 
         return ['rows' => $rows, 'totals' => $totals, 'error' => null];
@@ -679,5 +679,22 @@ class BoardsReport
             'max_page' => max(1, $maxPage),
             'error'    => $message,
         ];
+    }
+
+    /**
+     * Mensagem de falha de SQL com o detalhe do banco (facilita o diagnóstico).
+     */
+    private static function sqlFailMessage(\Throwable $e): string
+    {
+        $msg = trim((string) $e->getMessage());
+        $pos = strpos($msg, ' in ');
+        if ($pos !== false) {
+            $msg = substr($msg, 0, $pos);
+        }
+        if (function_exists('mb_strlen') && mb_strlen($msg) > 300) {
+            $msg = mb_substr($msg, 0, 300) . '...';
+        }
+        return 'Não foi possível executar a consulta do relatório.'
+            . ($msg !== '' ? ' [' . $msg . ']' : '');
     }
 }
