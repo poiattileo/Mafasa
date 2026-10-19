@@ -122,6 +122,20 @@ echo "<div class='mf-page-header'>";
 echo "<h2>" . mf_brd_esc(__('Relatório de Quadros (Kanpro)', 'mafasa')) . "</h2>";
 echo "</div>";
 
+// ---- Navegação entre relatórios ----
+echo "<div class='mf-actions mf-nav'>";
+if (\GlpiPlugin\Mafasa\Report::canView()) {
+    echo "<a class='mf-btn' href='" . mf_brd_esc($webdir . '/front/report.php') . "'>"
+        . mf_brd_esc(__('Ativos', 'mafasa')) . "</a>";
+}
+if (class_exists('Ticket') && Ticket::canView()) {
+    echo "<a class='mf-btn' href='" . mf_brd_esc($webdir . '/front/tickets.php') . "'>"
+        . mf_brd_esc(__('Chamados', 'mafasa')) . "</a>";
+}
+echo "<a class='mf-btn mf-btn-primary' href='" . mf_brd_esc($webdir . '/front/boards.php') . "'>"
+    . mf_brd_esc(__('Quadros Kanpro', 'mafasa')) . "</a>";
+echo "</div>";
+
 if (!$available) {
     echo "<div class='mf-warning' role='alert'>"
         . mf_brd_esc(__('O plugin Kanpro não está instalado (tabelas de quadros ausentes). Os relatórios de quadros ficam indisponíveis.', 'mafasa'))

@@ -208,12 +208,12 @@ class Report extends \CommonGLPI
 
         $icons = self::getCategoryIcons();
         $menu = [
-            'title' => self::getTypeName(),
+            'title' => 'Relatórios',
             'page'  => $base . '/front/report.php',
             'icon'  => self::getIcon(),
         ];
         $menu['options']['report'] = [
-            'title' => self::getTypeName(),
+            'title' => 'Relatórios de Ativos',
             'page'  => $base . '/front/report.php',
             'icon'  => self::getIcon(),
         ];

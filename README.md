@@ -9,7 +9,9 @@ desmarcáveis, resumos agregados e impressão/PDF com cabeçalho institucional
 
 1. Copiar a pasta `Mafasa` para `plugins/` ou `marketplace/` do GLPI.
 2. Em Configurar → Plugins: Instalar → Ativar.
-3. Acessar em Ferramentas → Mafasa.
+3. Acessar em Ferramentas → Relatórios (ou abrir diretamente
+   `front/report.php`; as telas têm navegação interna entre Ativos, Chamados e
+   Quadros Kanpro).
 
 ## Estrutura
 

@@ -12,6 +12,7 @@ include('../../../inc/includes.php');
 require_once __DIR__ . '/../src/compat.php';
 
 use GlpiPlugin\Mafasa\TicketsReport;
+use GlpiPlugin\Mafasa\BoardsReport;
 
 Session::checkLoginUser();
 
@@ -129,6 +130,20 @@ echo "<link rel='stylesheet' href='" . mf_tix_esc($webdir . '/public/css/mafasa.
 echo "<div class='mf-page'>";
 echo "<div class='mf-page-header'>";
 echo "<h2>" . mf_tix_esc(__('Relatório de Chamados', 'mafasa')) . "</h2>";
+echo "</div>";
+
+// ---- Navegação entre relatórios ----
+echo "<div class='mf-actions mf-nav'>";
+if (\GlpiPlugin\Mafasa\Report::canView()) {
+    echo "<a class='mf-btn' href='" . mf_tix_esc($webdir . '/front/report.php') . "'>"
+        . mf_tix_esc(__('Ativos', 'mafasa')) . "</a>";
+}
+echo "<a class='mf-btn mf-btn-primary' href='" . mf_tix_esc($webdir . '/front/tickets.php') . "'>"
+    . mf_tix_esc(__('Chamados', 'mafasa')) . "</a>";
+if (BoardsReport::available() && BoardsReport::canView()) {
+    echo "<a class='mf-btn' href='" . mf_tix_esc($webdir . '/front/boards.php') . "'>"
+        . mf_tix_esc(__('Quadros Kanpro', 'mafasa')) . "</a>";
+}
 echo "</div>";
 
 // ---- Abas lista/resumo ----

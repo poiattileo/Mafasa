@@ -10,6 +10,7 @@ include('../../../inc/includes.php');
 require_once __DIR__ . '/../src/compat.php';
 
 use GlpiPlugin\Mafasa\Report;
+use GlpiPlugin\Mafasa\BoardsReport;
 
 Session::checkLoginUser();
 
@@ -117,6 +118,20 @@ echo "<link rel='stylesheet' href='" . mf_report_esc($webdir . '/public/css/mafa
 echo "<div class='mf-page'>";
 echo "<div class='mf-page-header'>";
 echo "<h2>" . mf_report_esc(__('Relatório de Ativos', 'mafasa')) . "</h2>";
+echo "</div>";
+
+// ---- Navegação entre relatórios ----
+echo "<div class='mf-actions mf-nav'>";
+echo "<a class='mf-btn mf-btn-primary' href='" . mf_report_esc($webdir . '/front/report.php') . "'>"
+    . mf_report_esc(__('Ativos', 'mafasa')) . "</a>";
+if (class_exists('Ticket') && Ticket::canView()) {
+    echo "<a class='mf-btn' href='" . mf_report_esc($webdir . '/front/tickets.php') . "'>"
+        . mf_report_esc(__('Chamados', 'mafasa')) . "</a>";
+}
+if (BoardsReport::available() && BoardsReport::canView()) {
+    echo "<a class='mf-btn' href='" . mf_report_esc($webdir . '/front/boards.php') . "'>"
+        . mf_report_esc(__('Quadros Kanpro', 'mafasa')) . "</a>";
+}
 echo "</div>";
 
 echo "<form id='mf-form' method='get'>";
