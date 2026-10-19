@@ -1,7 +1,8 @@
-# Mafasa — Relatórios de Ativos (README GLPI)
+# [URE] Mafasa — Relatórios (README GLPI)
 
-Plugin GLPI para relatórios de ativos por categoria, com filtros totais,
-colunas desmarcáveis e impressão/PDF com cabeçalho institucional (URE Jales).
+Plugin GLPI para relatórios de ativos, chamados do GLPI e quadros do Kanpro,
+com filtros totais, colunas desmarcáveis e impressão/PDF com cabeçalho
+institucional (URE Jales).
 
 ## Compatibilidade
 
@@ -15,15 +16,16 @@ colunas desmarcáveis e impressão/PDF com cabeçalho institucional (URE Jales).
    (o plugin resolve os dois caminhos sozinho).
 2. No GLPI, acesse **Configurar → Plugins**.
 3. Clique em **Instalar** e depois em **Ativar** no plugin
-   **"Mafasa - Relatórios de Ativos"**.
-4. (Opcional) Ajuste título/rodapé/logo em **Configurar → Plugins → Mafasa**
+   **"[URE] Mafasa"**.
+4. (Opcional) Ajuste título/rodapé/logo em **Configurar → Plugins → [URE] Mafasa**
    (ícone de configuração → `front/config.php`, requer direito `config` UPDATE).
 
 ## Uso
 
-1. Acesse **Ferramentas → Mafasa** (ou o submenu da categoria:
+1. Acesse **Ferramentas → [URE] Mafasa** (ou o submenu da categoria:
    Computadores, Monitores, Impressoras, Redes, Periféricos, Telefones,
-   Softwares, Racks, etc.).
+   Softwares, Racks, etc.). As opções **Chamados GLPI** e **Quadros Kanpro**
+   aparecem quando o usuário tem a permissão correspondente.
 2. Preencha os **filtros** (Identificação, Localização/Responsáveis, Datas).
 3. Clique em **Gerar** — a tabela pagina de 50 em 50.
 4. No painel **Colunas**, **desmarque** o que não quiser

@@ -1,14 +1,14 @@
-# Mafasa - Relatórios de Ativos
+# [URE] Mafasa
 
-Plugin GLPI (compat 11.0.0–12.0.99, PHP >= 8.2) para relatórios de ativos por
-categoria, com filtros totais, colunas desmarcáveis e impressão/PDF com
-cabeçalho institucional (URE Jales).
+Plugin GLPI (compat 11.0.0–12.0.99, PHP >= 8.2) para relatórios de ativos,
+chamados do GLPI e quadros do Kanpro, com filtros totais, colunas desmarcáveis
+e impressão/PDF com cabeçalho institucional (URE Jales).
 
 ## Instalação
 
 1. Copiar a pasta `Mafasa` para `plugins/` ou `marketplace/` do GLPI.
 2. Em Configurar → Plugins: Instalar → Ativar.
-3. Acessar em Ferramentas → Mafasa.
+3. Acessar em Ferramentas → [URE] Mafasa.
 
 ## Estrutura (espelho Protocolo)
 
@@ -18,7 +18,7 @@ src/compat.php, src/Install.php, src/Report.php, src/Config.php
 front/report.php, front/print.php, front/config.php
 install/mysql/plugin_mafasa_empty.sql
 public/css/mafasa.css, public/css/mafasa-print.css, public/js/app.js
-public/img/logo-ure-jales.png
+public/img/logo-mafasa.png, public/img/logo-ure-jales.png
 ```
 
 ## Status
