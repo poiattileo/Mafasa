@@ -1,6 +1,6 @@
 {
     "name": "ure-jales/mafasa",
-    "description": "Plugin GLPI - Mafasa Relatórios de Ativos (relatórios por categoria com impressão/PDF institucional URE Jales)",
+    "description": "Plugin GLPI - [URE] Mafasa: relatórios de ativos, chamados GLPI e quadros Kanpro com impressão/PDF institucional (URE Jales)",
     "type": "glpi-plugin",
     "license": "GPL-2.0-or-later",
     "authors": [
