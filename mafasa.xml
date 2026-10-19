@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-    <name>Mafasa - Relatórios de Ativos</name>
-    <version>1.1.1</version>
+    <name>[URE] Mafasa</name>
+    <version>1.2.0</version>
     <author>Leonardo Poiatti Fação</author>
     <license>GPLv2+</license>
     <homepage>https://github.com/poiattileo/Mafasa</homepage>
-    <description>Relatórios de ativos por categoria com filtros totais, colunas desmarcáveis e impressão/PDF com cabeçalho institucional (URE Jales).</description>
+    <description>Relatórios de ativos, chamados e quadros Kanpro com filtros totais, colunas desmarcáveis, resumos agregados e impressão/PDF com cabeçalho institucional (URE Jales).</description>
     <tag>mafasa</tag>
     <requirements>
         <glpi min="11.0.0" max="12.0.99" />

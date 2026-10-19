@@ -7,7 +7,7 @@
 
 require_once __DIR__ . '/src/compat.php';
 
-define('PLUGIN_MAFASA_VERSION', '1.1.1');
+define('PLUGIN_MAFASA_VERSION', '1.2.0');
 define('PLUGIN_MAFASA_MIN_GLPI', '11.0.0');
 define('PLUGIN_MAFASA_MAX_GLPI', '12.0.99');
 define('PLUGIN_MAFASA_NAMESPACE', 'GlpiPlugin\\Mafasa');
@@ -18,7 +18,7 @@ define('PLUGIN_MAFASA_NAMESPACE', 'GlpiPlugin\\Mafasa');
 function plugin_version_mafasa(): array
 {
     return [
-        'name'           => 'Mafasa - Relatórios de Ativos',
+        'name'           => '[URE] Mafasa',
         'version'        => PLUGIN_MAFASA_VERSION,
         'author'         => 'Leonardo Poiatti Fação',
         'license'        => 'GPLv2+',

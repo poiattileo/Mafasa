@@ -50,7 +50,8 @@
     if (!print) return;
     try {
       var shared = new URL(currentShareUrl(), window.location.href);
-      print.setAttribute('href', 'print.php?' + shared.searchParams.toString());
+      var target = print.getAttribute('data-print') || 'print.php';
+      print.setAttribute('href', target + '?' + shared.searchParams.toString());
     } catch (e) {
       /* mantém link original */
     }

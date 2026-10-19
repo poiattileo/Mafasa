@@ -177,7 +177,7 @@ class Report extends \CommonGLPI
 
     public static function getTypeName($nb = 0)
     {
-        return $nb > 1 ? 'Relatórios de Ativos' : 'Relatório de Ativos';
+        return '[URE] Mafasa';
     }
 
     /**
@@ -222,6 +222,20 @@ class Report extends \CommonGLPI
                 'title' => $label,
                 'page'  => $base . '/front/report.php?type=' . rawurlencode($itemtype),
                 'icon'  => $icons[$itemtype] ?? 'ti ti-file-analytics',
+            ];
+        }
+        // Relatórios de chamados (sempre; a tela valida Ticket::canView).
+        $menu['options']['tickets'] = [
+            'title' => 'Chamados',
+            'page'  => $base . '/front/tickets.php',
+            'icon'  => 'ti ti-ticket',
+        ];
+        // Relatórios de quadros Kanpro (apenas quando o Kanpro está instalado).
+        if (BoardsReport::available() && BoardsReport::canView()) {
+            $menu['options']['boards'] = [
+                'title' => 'Quadros Kanpro',
+                'page'  => $base . '/front/boards.php',
+                'icon'  => 'ti ti-layout-kanban',
             ];
         }
         return $menu;

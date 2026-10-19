@@ -107,6 +107,10 @@ function mf_print_cell(string $key, $value): string
 
 $webdir = mafasa_web_dir('mafasa');
 $cssUrl = $webdir . '/public/css/mafasa-print.css';
+$cssPath = __DIR__ . '/../public/css/mafasa-print.css';
+if (is_file($cssPath)) {
+    $cssUrl .= '?v=' . filemtime($cssPath);
+}
 $backQs = http_build_query($_GET);
 $pageTitle = ($headerTitle !== '') ? $headerTitle : __('Relatório de Ativos', 'mafasa');
 ?>

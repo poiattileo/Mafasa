@@ -18,7 +18,7 @@ class Config
     public const CONTEXT = 'plugin:mafasa';
 
     public const DEFAULT_HEADER_TITLE = 'Relatório de Ativos — URE Jales';
-    public const DEFAULT_FOOTER_TEXT = 'Mafasa — Relatórios de Ativos (URE Jales)';
+    public const DEFAULT_FOOTER_TEXT = '[URE] Mafasa — Relatórios (URE Jales)';
 
     /**
      * Valores padrão (logo_path vazio = usa public/img/logo-ure-jales.png).
