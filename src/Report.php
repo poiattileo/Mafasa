@@ -181,13 +181,10 @@ class Report extends \CommonGLPI
     }
 
     /**
-     * Conteúdo do menu Ferramentas → Mafasa (shape v1 preservado).
+     * Conteúdo do menu Ferramentas → [URE] Mafasa (shape v1 preservado).
      */
     public static function getMenuContent()
     {
-        if (!self::canView()) {
-            return [];
-        }
         global $CFG_GLPI;
         $base = '/plugins/mafasa';
         if (function_exists('mafasa_web_dir')) {
@@ -206,25 +203,57 @@ class Report extends \CommonGLPI
             }
         }
 
-        $icons = self::getCategoryIcons();
-        $menu = [
-            'title' => self::getTypeName(),
-            'page'  => $base . '/front/report.php',
-            'icon'  => self::getIcon(),
-        ];
-        $menu['options']['report'] = [
-            'title' => self::getTypeName(),
-            'page'  => $base . '/front/report.php',
-            'icon'  => self::getIcon(),
-        ];
-        foreach (self::getCategories() as $itemtype => $label) {
-            $menu['options']['report_' . strtolower($itemtype)] = [
-                'title' => $label,
-                'page'  => $base . '/front/report.php?type=' . rawurlencode($itemtype),
-                'icon'  => $icons[$itemtype] ?? 'ti ti-file-analytics',
+        $options = [];
+        if (self::canView()) {
+            $icons = self::getCategoryIcons();
+            $options['report'] = [
+                'title' => self::getTypeName(),
+                'page'  => $base . '/front/report.php',
+                'icon'  => self::getIcon(),
+            ];
+            foreach (self::getCategories() as $itemtype => $label) {
+                $options['report_' . strtolower($itemtype)] = [
+                    'title' => $label,
+                    'page'  => $base . '/front/report.php?type=' . rawurlencode($itemtype),
+                    'icon'  => $icons[$itemtype] ?? 'ti ti-file-analytics',
+                ];
+            }
+        }
+
+        if (class_exists(\GlpiPlugin\Mafasa\TicketReport::class)
+            && is_callable([\GlpiPlugin\Mafasa\TicketReport::class, 'canView'])
+            && \GlpiPlugin\Mafasa\TicketReport::canView()) {
+            $options['chamados'] = [
+                'title' => 'Chamados GLPI',
+                'page'  => $base . '/front/chamados.php',
+                'icon'  => 'ti ti-ticket',
             ];
         }
-        return $menu;
+
+        if (class_exists(\GlpiPlugin\Mafasa\BoardReport::class)
+            && is_callable([\GlpiPlugin\Mafasa\BoardReport::class, 'isAvailable'])
+            && \GlpiPlugin\Mafasa\BoardReport::isAvailable()
+            && is_callable([\GlpiPlugin\Mafasa\BoardReport::class, 'canView'])
+            && \GlpiPlugin\Mafasa\BoardReport::canView()) {
+            $options['quadros'] = [
+                'title' => 'Quadros Kanpro',
+                'page'  => $base . '/front/quadros.php',
+                'icon'  => 'ti ti-layout-kanban',
+            ];
+        }
+
+        if ($options === []) {
+            return [];
+        }
+
+        $firstKey = array_key_first($options);
+
+        return [
+            'title'   => '[URE] Mafasa',
+            'page'    => (string) ($options[$firstKey]['page'] ?? $base . '/front/report.php'),
+            'icon'    => self::getIcon(),
+            'options' => $options,
+        ];
     }
 
     // ------------------------------------------------------------------
