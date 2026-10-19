@@ -31,6 +31,8 @@ class Install
 
             Config::setConfigurationValues('plugin:mafasa', ['installed' => date('Y-m-d H:i:s')]);
 
+            self::migrateBranding();
+
             return true;
         } catch (\Throwable $e) {
             $msg = "[mafasa] Erro na instalação: " . $e->getMessage() . " em " . $e->getFile() . ":" . $e->getLine();
@@ -49,6 +51,37 @@ class Install
         } catch (\Throwable $e) {
             error_log("[mafasa] uninstall erro: " . $e->getMessage());
             return false;
+        }
+    }
+
+    private static function migrateBranding(): void
+    {
+        try {
+            if (!class_exists(\GlpiPlugin\Mafasa\Config::class) || !class_exists(\Config::class)) {
+                return;
+            }
+            $context = \GlpiPlugin\Mafasa\Config::CONTEXT;
+            if (method_exists(\Config::class, 'getConfigurationValues')
+                && method_exists(\Config::class, 'setConfigurationValues')) {
+                $stored = \Config::getConfigurationValues($context);
+                if (is_array($stored)) {
+                    $updates = [];
+                    if (isset($stored['header_title'])
+                        && (string) $stored['header_title'] === 'Relatório de Ativos — URE Jales') {
+                        $updates['header_title'] = \GlpiPlugin\Mafasa\Config::DEFAULT_HEADER_TITLE;
+                    }
+                    if (isset($stored['footer_text'])
+                        && (string) $stored['footer_text'] === 'Mafasa — Relatórios de Ativos (URE Jales)') {
+                        $updates['footer_text'] = \GlpiPlugin\Mafasa\Config::DEFAULT_FOOTER_TEXT;
+                    }
+                    if ($updates !== []) {
+                        \Config::setConfigurationValues($context, $updates);
+                    }
+                }
+            }
+            \GlpiPlugin\Mafasa\Config::initDefaults();
+        } catch (\Throwable $e) {
+            error_log('[mafasa] Migração de identidade falhou: ' . $e->getMessage());
         }
     }
 

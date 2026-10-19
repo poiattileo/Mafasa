@@ -17,11 +17,11 @@ class Config
 {
     public const CONTEXT = 'plugin:mafasa';
 
-    public const DEFAULT_HEADER_TITLE = 'Relatório de Ativos — URE Jales';
-    public const DEFAULT_FOOTER_TEXT = 'Mafasa — Relatórios de Ativos (URE Jales)';
+    public const DEFAULT_HEADER_TITLE = '[URE] Mafasa — Relatórios';
+    public const DEFAULT_FOOTER_TEXT = '[URE] Mafasa';
 
     /**
-     * Valores padrão (logo_path vazio = usa public/img/logo-ure-jales.png).
+     * Valores padrão (logo_path vazio = usa public/img/logo-mafasa.png).
      *
      * @return array{header_title: string, footer_text: string, logo_path: string}
      */
@@ -225,7 +225,7 @@ class Config
      * Prioriza a logo enviada (files/_plugins/mafasa/, storage v1) convertida em
      * data URI base64 (mime por extensão: png/jpg/jpeg/gif/svg; ignora arquivos
      * maiores que 2 MB). Sem upload válido, cai para a logo padrão embutida
-     * public/img/logo-ure-jales.png quando ela existir; senão retorna ''.
+     * public/img/logo-mafasa.png quando ela existir; senão retorna ''.
      */
     public static function getLogoUrl(): string
     {
@@ -251,10 +251,10 @@ class Config
         }
 
         $php = function_exists('mafasa_php_dir') ? (string) mafasa_php_dir('mafasa') : __DIR__ . '/..';
-        $defaultFile = rtrim($php, '/\\') . '/public/img/logo-ure-jales.png';
+        $defaultFile = rtrim($php, '/\\') . '/public/img/logo-mafasa.png';
         if (is_file($defaultFile)) {
             $web = function_exists('mafasa_web_dir') ? (string) mafasa_web_dir('mafasa') : '';
-            return $web . '/public/img/logo-ure-jales.png';
+            return $web . '/public/img/logo-mafasa.png';
         }
 
         return '';
