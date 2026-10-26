@@ -5,7 +5,7 @@ colunas desmarcáveis e impressão/PDF com cabeçalho institucional (URE Jales).
 
 ## Compatibilidade
 
-- GLPI **11.0.0 – 12.0.99**
+- GLPI **12.0.0 – 12.0.99**
 - PHP **>= 8.2**
 - MariaDB/MySQL (o que o GLPI usar)
 

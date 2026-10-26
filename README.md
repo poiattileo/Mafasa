@@ -1,6 +1,6 @@
 # [URE] Mafasa — Relatórios de Ativos, Chamados e Quadros
 
-Plugin GLPI (compat 11.0.0–12.0.99, PHP >= 8.2) para relatórios de ativos por
+Plugin GLPI (compat 12.0.0–12.0.99, PHP >= 8.2) para relatórios de ativos por
 categoria, de chamados GLPI e de quadros Kanpro, com filtros totais, colunas
 desmarcáveis, resumos agregados e impressão/PDF com cabeçalho institucional
 (URE Jales).
